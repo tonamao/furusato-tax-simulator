@@ -1,0 +1,539 @@
+/* ==========================================================================
+   ふるさと納税 上限額シミュレーター スタイルシート (完全版)
+   デザイン: シンプルモダン固定
+   ========================================================================== */
+
+:root {
+    --primary-color: #3b82f6; /* 青色系 */
+    --secondary-color: #60a5fa; /* 薄い青色系 */
+    --accent-color: #f43f5e; /* 赤色系（強調用） */
+    --success-color: #0d9488; /* 緑色系（成功・確認用） */
+    --warning-color: #eab308; /* 黄色系（注意・警告用） */
+    --background-color: #f9fafb; /* 全体背景色 */
+    --card-bg: #ffffff; /* カード背景色 */
+    --card-border: #e5e7eb; /* カード境界線 */
+    --border-color: #d1d5db; /* 通常の境界線 */
+    --text-color: #111827; /* 標準テキスト色 */
+    --text-muted: #6b7280; /* 薄いテキスト色 */
+    --radius: 8px; /* 角丸 */
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* カード影 */
+    --result-bg: #ecfdf5; /* 結果カード背景 */
+    --result-border: #0d9488; /* 結果カード境界線 */
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    margin: 0;
+    padding: 24px 16px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* 上寄せ */
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 960px; /* コンテンツ幅 */
+    width: 100%;
+    background-color: var(--card-bg);
+    padding: 30px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+header h1 {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.subtitle {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 30px;
+}
+
+/* CSVツールバー */
+.csv-toolbar {
+    margin-bottom: 24px;
+    padding: 16px;
+    border: 1px solid var(--card-border);
+    background-color: #f9fafb; /* 少し薄い背景 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: var(--radius);
+}
+
+.csv-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap; /* スマホで折り返す */
+    justify-content: center;
+}
+
+/* タブ切り替え */
+.tabs {
+    display: flex;
+    margin-bottom: 24px;
+    border-bottom: 2px solid var(--primary-color);
+    gap: 4px; /* ボタン間の隙間 */
+}
+
+.tab-btn {
+    padding: 12px 20px;
+    border: none;
+    background-color: #f3f4f6; /* 非アクティブ時の背景 */
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    border-top-left-radius: var(--radius);
+    border-top-right-radius: var(--radius);
+    transition: background-color 0.3s, color 0.3s;
+    flex-grow: 1; /* 幅を均等にする */
+    text-align: center;
+}
+
+.tab-btn.active {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border-bottom: 2px solid var(--primary-color); /* アクティブ時に下線を強調 */
+}
+
+.tab-content {
+    display: none; /* 初期状態は非表示 */
+    animation: fadeIn 0.5s ease-out; /* フェードインアニメーション */
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* カードスタイル */
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+}
+
+/* フォームセクション共通スタイル */
+.form-section-basic,
+.form-section-deduction,
+.form-section-application {
+    border-left: 6px solid var(--primary-color); /* デフォルト */
+}
+
+.form-section-basic {
+    background-color: #f0f9ff; /* 基本情報セクションの背景色 */
+    border-left-color: var(--primary-color);
+}
+
+.form-section-deduction {
+    background-color: #fefce8; /* 控除セクションの背景色 */
+    border-left-color: var(--warning-color);
+}
+
+.form-section-application {
+    background-color: #ecfdf5; /* 申請方法セクションの背景色 */
+    border-left-color: var(--success-color);
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.section-title .step-num {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border-radius: 50%;
+    font-size: 1rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.form-section-deduction .section-title .step-num {
+    background-color: var(--warning-color);
+}
+
+.form-section-application .section-title .step-num {
+    background-color: var(--success-color);
+}
+
+.section-title h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.section-title .section-desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: auto; /* 右寄せ */
+}
+
+/* フォームグリッド */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2カラム */
+    gap: 20px; /* 要素間の隙間 */
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px; /* ラベルと入力欄の間隔 */
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1; /* フル幅で表示 */
+}
+
+.form-group label {
+    font-weight: 600;
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+.form-group input[type="number"],
+.form-group input[type="text"],
+.form-group select {
+    padding: 10px 14px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    font-size: 0.95rem;
+    color: var(--text-color);
+    background-color: #ffffff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-group input[type="number"]:focus,
+.form-group input[type="text"]:focus,
+.form-group select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.help-text {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+    margin-top: 2px;
+}
+
+/* ボタン共通 */
+button {
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.btn,
+button[type="button"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 18px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-secondary {
+    background-color: #ffffff;
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+.btn-secondary:hover {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: var(--text-muted);
+    border-color: var(--border-color);
+}
+
+.btn-outline:hover {
+    background-color: #fee2e2;
+    color: #dc2626;
+    border-color: #fca5a5;
+}
+
+.file-upload-label {
+    cursor: pointer;
+}
+
+/* 入力欄内の補助ボタン（年収から概算入力など） */
+.btn-sub {
+    align-self: flex-start;
+    margin-top: 4px;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--primary-color);
+    background-color: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.btn-sub:hover {
+    background-color: #dbeafe;
+    border-color: var(--primary-color);
+}
+
+/* 計算実行ボタン */
+section > button[type="button"] {
+    width: 100%;
+    margin-top: 10px;
+    padding: 14px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ffffff;
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: var(--radius);
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+section > button[type="button"]:hover {
+    background-color: #2563eb;
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
+}
+
+/* 申請方法判定バッジ（結果表示カード内） */
+.info-badge {
+    background-color: var(--success-color);
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 14px 20px;
+    border-radius: var(--radius);
+    margin-top: 8px;
+    display: block;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* 結果表示カード */
+.result-card {
+    background: var(--result-bg);
+    border: 1px solid #a7f3d0;
+    border-left: 6px solid var(--result-border);
+    margin-top: 28px;
+    padding: 28px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.result-card h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.35rem;
+    color: #065f46;
+    font-weight: 700;
+    border-bottom: 2px solid #a7f3d0;
+    padding-bottom: 8px;
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px dashed #6ee7b7;
+}
+
+.result-item:last-of-type {
+    border-bottom: none;
+}
+
+.result-item span:first-child {
+    color: #1f2937;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.result-item span:last-child {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #047857;
+}
+
+/* 控除上限額の強調表示 */
+#result-max-donation {
+    font-size: 2.1rem !important;
+    color: #dc2626 !important;
+    letter-spacing: -0.5px;
+}
+
+/* 住宅ローン控除額の強調表示 */
+#result-mortgage-deduction {
+    font-size: 1.5rem !important;
+    color: #0d9488 !important;
+}
+
+/* 結果説明・根拠欄 */
+.result-explanation {
+    margin-top: 24px;
+    padding: 18px;
+    background-color: #ffffff;
+    border-radius: var(--radius);
+    border: 1px solid #d1fae5;
+}
+
+.result-explanation p {
+    margin: 0 0 10px 0;
+    font-size: 0.85rem;
+    color: #374151;
+    line-height: 1.6;
+}
+
+.result-explanation p:last-child {
+    margin-bottom: 0;
+}
+
+.result-explanation strong {
+    color: #111827;
+    font-weight: 700;
+}
+
+.result-basis {
+    font-size: 0.82rem !important;
+    color: #047857 !important;
+    margin-top: 10px;
+    padding: 8px 12px;
+    background-color: #f0fdf4;
+    border-radius: 4px;
+    border-left: 3px solid #34d399;
+    display: block;
+}
+
+.result-note {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 16px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.calculation-note {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin: 24px 0 12px;
+}
+
+footer {
+    margin-top: 36px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    body {
+        padding: 16px 10px;
+    }
+
+    .container {
+        padding: 18px 14px;
+    }
+
+    header h1 {
+        font-size: 1.5rem;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr; /* スマホ表示では1列レイアウト */
+        gap: 14px;
+    }
+
+    .section-title {
+        flex-wrap: wrap;
+    }
+
+    .section-title .section-desc {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 4px;
+    }
+
+    .tabs {
+        gap: 2px;
+    }
+
+    .tab-btn {
+        padding: 10px 8px;
+        font-size: 0.9rem;
+    }
+
+    .csv-actions {
+        width: 100%;
+    }
+
+    .csv-actions .btn,
+    .csv-actions .btn-outline {
+        flex: 1 1 calc(50% - 8px);
+        font-size: 0.8rem;
+        padding: 8px;
+    }
+
+    .result-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .result-item span:last-child {
+        align-self: flex-end;
+    }
+
+    #result-max-donation {
+        font-size: 1.7rem !important;
+    }
+
+    #result-mortgage-deduction {
+        font-size: 1.3rem !important;
+    }
+}

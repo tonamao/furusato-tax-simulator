@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ふるさと納税 控除上限額シミュレーター</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ふるさと納税 上限額シミュレーター</h1>
+            <p class="subtitle">住宅ローン控除・iDeCo・各種控除対応（税制改正準拠）</p>
+        </header>
+
+        <!-- CSVデータ操作ツールバー -->
+        <div class="csv-toolbar card">
+            <div class="csv-actions">
+                <button type="button" class="btn btn-secondary" onclick="exportCSV()">入力内容をCSV保存</button>
+                <label class="btn btn-secondary file-upload-label">
+                    CSVを読み込む
+                    <input type="file" id="csvFileInput" accept=".csv" onchange="importCSV(event)" style="display: none;">
+                </label>
+                <button type="button" class="btn btn-outline" onclick="resetForm()">リセット</button>
+            </div>
+        </div>
+
+        <!-- タブ切り替え -->
+        <div class="tabs">
+            <button class="tab-btn active" id="tab-btn-detail" onclick="switchTab('detail')">詳細シミュレーション</button>
+        </div>
+
+        <!-- 詳細タブ -->
+        <section id="tab-detail" class="tab-content active">
+            <!-- グループ1: 基本情報セクション -->
+            <div class="card form-section-basic">
+                <div class="section-title">
+                    <span class="step-num">1</span>
+                    <h2>基本情報</h2>
+                    <span class="section-desc">年収や家族構成などの基本情報を入力してください</span>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="detail-salary">額面給与年収 (円)</label>
+                        <input type="number" id="detail-salary" placeholder="例: 6000000" step="10000" oninput="calculate()">
+                        <small class="help-text">毎月の給与の額面支給額の1年間の総額（手取りではなく税引前の総支給額）</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="detail-social">支払った社会保険料 (円)</label>
+                        <input type="number" id="detail-social" placeholder="例: 900000" step="1000" oninput="calculate()">
+                        <button type="button" class="btn-sub" onclick="autoFillSocialInsurance()">年収から概算（約15%）を入力</button>
+                        <small class="help-text">毎月の給与の社会保険料合計（健康保険・厚生年金・雇用保険等）の1年間の総額</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="detail-family">家族構成</label>
+                        <select id="detail-family" onchange="calculate()">
+                            <option value="single">独身 / 共働き（配偶者控除なし）</option>
+                            <option value="spouse_no_income">配偶者あり（配偶者の年収なし または 103万円以下）</option>
+                            <option value="spouse_part_time">配偶者あり（配偶者の年収103万超〜201万円以下）</option>
+                            <option value="child_highschool">配偶者（収入なし）＋ 高校生の子ども1人（16〜18歳）</option>
+                            <option value="child_college">配偶者（収入なし）＋ 大学生等の子ども1人（19〜22歳）</option>
+                            <option value="child_two">配偶者（収入なし）＋ 高校生1人 ＋ 大学生1人</option>
+                        </select>
+                        <small class="help-text">※中学生以下（15歳以下）のお子様は税制上の控除対象外です。扶養親族等による控除額の変動を考慮します。</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="detail-prefecture">お住まいの自治体区分</label>
+                        <select id="detail-prefecture" onchange="calculate()">
+                            <option value="standard">一般市町村・東京23区</option>
+                            <option value="designated">政令指定都市（札幌/仙台/横浜/名古屋/京都/大阪/神戸/福岡など全20市）</option>
+                        </select>
+                        <small class="help-text">住民税の配分割合が自治体区分により自動判定されます。</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- グループ2: 各種控除セクション -->
+            <div class="card form-section-deduction">
+                <div class="section-title">
+                    <span class="step-num">2</span>
+                    <h2>各種控除</h2>
+                    <span class="section-desc">適用される可能性のある控除額を入力してください</span>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="detail-medical">医療費の年間支払額 (円)</label>
+                        <input type="number" id="detail-medical" placeholder="例: 150000" step="1000" oninput="calculate()">
+                        <small class="help-text">1年間で実際に支払った医療費の総額（保険金等で補填された額を除く）</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="detail-life-insurance">生命保険料の年間支払額 (円)</label>
+                        <input type="number" id="detail-life-insurance" placeholder="例: 80000" step="1000" oninput="calculate()">
+                        <small class="help-text">個人年金保険料、介護医療保険料、生命保険料の合計額（新制度上限あり）</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="detail-earthquake-insurance">地震保険料の年間支払額 (円)</label>
+                        <input type="number" id="detail-earthquake-insurance" placeholder="例: 10000" step="1000" oninput="calculate()">
+                        <small class="help-text">火災保険料のうち、地震保険部分の年間支払額（上限あり）</small>
+                    </div>
+
+                    <!-- iDeCo関連 -->
+                    <div class="form-group">
+                        <label for="detail-pension-type">ご自身の年金制度</label>
+                        <select id="detail-pension-type" onchange="updateIdecoMax(); calculate();">
+                            <option value="none">iDeCoのみ加入</option>
+                            <option value="dc_employee">企業型DC加入（iDeCo併用不可）</option>
+                            <option value="dc_employee_plus">企業型DC加入＋iDeCo（任意）</option>
+                        </select>
+                        <small class="help-text">※企業型DCのみの場合、iDeCoは利用できません</small>
+                    </div>
+
+                    <div class="form-group" id="dc-amount-group">
+                        <label for="detail-dc-employer">企業型DCの事業主掛金 (月額・円)</label>
+                        <input type="number" id="detail-dc-employer" placeholder="例: 15000" step="1000" oninput="updateIdecoMax(); calculate();">
+                        <small class="help-text">事業主（会社）が掛けている金額</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="detail-ideco">iDeCo（個人型確定拠出年金）年間掛金 (円)</label>
+                        <input type="number" id="detail-ideco" placeholder="例: 240000" step="1000" oninput="calculate()">
+                        <small id="ideco-limit-text" class="help-text">拠出可能上限：算出中</small>
+                    </div>
+
+                    <!-- 住宅ローン控除 - 新設・拡充 -->
+                    <div class="form-group">
+                        <label for="detail-mortgage-balance">住宅ローン年末残高 (円)</label>
+                        <input type="number" id="detail-mortgage-balance" placeholder="例: 45000000" step="100000" oninput="calculate()">
+                        <small class="help-text">年末時点でのローン残高。控除額の計算に用います。</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="detail-mortgage-acquisition-year">入居年（取得年）</label>
+                        <select id="detail-mortgage-acquisition-year" onchange="updateMortgageDetails(); calculate();">
+                            <option value="2022_2023">2022年〜2023年</option>
+                            <option value="2024_2025">2024年〜2025年</option>
+                            <option value="2026_2030">2026年〜2030年</option>
+                        </select>
+                        <small class="help-text">入居した年（中古購入の場合は取得した年）を選択してください。</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="detail-mortgage-type">住宅の種類・性能</label>
+                        <select id="detail-mortgage-type" onchange="updateMortgageDetails(); calculate();">
+                            <option value="standard_new">新築（省エネ基準適合住宅）</option>
+                            <option value="standard_old">中古（省エネ基準適合住宅）</option>
+                            <option value="high_standard_new">新築（長期優良・ZEH水準省エネ住宅）</option>
+                            <option value="high_standard_old">中古（長期優良・ZEH水準省エネ住宅）</option>
+                            <option value="general_new">新築（一般住宅 ※2024年以降は原則対象外）</option>
+                        </select>
+                        <small class="help-text">住宅の性能や取得時期により、借入限度額が変わります。</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="detail-mortgage-is-first-year">住宅ローン控除の申告年目</label>
+                        <select id="detail-mortgage-is-first-year" onchange="calculate()">
+                            <option value="first">初年度（初回の住宅ローン控除適用）</option>
+                            <option value="subsequent">2年目以降（年末調整または確定申告）</option>
+                        </select>
+                        <small class="help-text">初年度は確定申告が必須となり、ふるさと納税も確定申告で合算して控除上限額を計算します。</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- グループ3: 申請方法判定 -->
+            <div class="card form-section-application">
+                <div class="section-title">
+                    <span class="step-num">3</span>
+                    <h2>申請方法判定</h2>
+                    <span class="section-desc">ふるさと納税の申請方法と、住宅ローン控除の適用について確認</span>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label>推奨される申請手続き</label>
+                        <div id="application-method-result" class="info-badge">判定中...</div>
+                        <small class="help-text">※確定申告が必要な場合、ふるさと納税も確定申告でまとめて申請するのが一般的です。</small>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" onclick="calculate()">上限額を計算する</button>
+        </section>
+
+        <!-- 計算結果表示 -->
+        <div id="result-section" class="card result-card hidden">
+            <h2>シミュレーション結果</h2>
+
+            <!-- 住宅ローン控除額表示 -->
+            <div class="result-item">
+                <span>住宅ローン控除額 (目安)</span>
+                <span id="result-mortgage-deduction"></span>
+            </div>
+
+            <!-- ふるさと納税 控除上限額表示 -->
+            <div class="result-item">
+                <span>ふるさと納税 控除上限額 (目安)</span>
+                <span id="result-max-donation"></span>
+            </div>
+
+            <div class="result-explanation">
+                <p><strong>【控除上限額とは？】</strong></p>
+                <p>ふるさと納税による税金の控除（所得税の還付＋住民税の軽減）が受けられる「上限」となる金額です。この金額を超えて寄付しても、超えた分は税金から控除されず、自己負担となります。</p>
+                <p><strong>【計算の根拠】</strong></p>
+                <p>このシミュレーションでは、年収、家族構成、社会保険料、各種控除（医療費、生命保険料、iDeCo、住宅ローン等）を考慮し、所得税と住民税の両方からの控除額を合計して算出しています。</p>
+                <p id="resident-tax-basis" class="result-basis"></p>
+                <p id="mortgage-basis" class="result-basis"></p>
+            </div>
+            <div class="result-note">
+                ※この金額は、入力された情報に基づいた目安です。実際の控除上限額や控除額は、お住まいの自治体や税務署にご確認ください。
+            </div>
+        </div>
+
+        <div class="calculation-note">
+            ※計算には、最新の税制（2026年10月以降施行分含む）および控除率・税率を考慮していますが、個別の複雑な税務状況には対応できない場合があります。
+        </div>
+
+        <footer>
+            <p>&copy; 2024 ふるさと納税シミュレーター. All rights reserved.</p>
+            <p>※このシミュレーターは、個人の所得税・住民税の計算に基づいた控除上限額の目安を表示するものであり、税務上の正式な計算や確定申告の代行を行うものではありません。実際の税額については、税務署またはお住まいの自治体にご確認ください。</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
